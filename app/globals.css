@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "react-quill/dist/quill.snow.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -80,3 +81,6 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+@import "~@uploadthing/react/styles.css"
