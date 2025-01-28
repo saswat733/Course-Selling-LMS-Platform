@@ -8,14 +8,25 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils"; // Adjust the import path as necessary
+import { Textarea } from "@/components/ui/textarea";
 import { Course } from "@prisma/client";
+import Image from "next/image";
 import { FileUpload } from "@/components/file-upload";
 
 const formSchema = z.object({
-  ImageUrl: z.string().min(1, {
+  imageUrl: z.string().min(1, {
     message: "Image is required",
   }),
 });
@@ -32,13 +43,11 @@ const ImageForm = ({ initialData, courseId }: PropsType) => {
   
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Values submitted:", values);
     try {
-        console.log("payload sending:",values)
-        console.log("courseId in ImageForm:", courseId);
+      await axios.patch(`/api/courses/${courseId}`, values);
 
-      const response = await axios.patch(`/api/courses/${courseId}`, values); // Send payload as { title }
-
-      toast.success("Course Image updated successfully");
+      toast.success("Course image updated successfully");
       setIsEditing(false);
       router.refresh();
     } catch (error) {
@@ -46,8 +55,6 @@ const ImageForm = ({ initialData, courseId }: PropsType) => {
       toast.error("Something went wrong. Please try again.");
     }
   }
-
-
 
   return (
     <div className="flex w-fit flex-col gap-x-4 mt-10 bg-slate-200 p-4 rounded-md">
@@ -57,57 +64,55 @@ const ImageForm = ({ initialData, courseId }: PropsType) => {
           <Button
             variant="ghost"
             className="ml-10"
-            onClick={() => setIsEditing((prev: any) => !prev)}
+            onClick={() => setIsEditing((prev) => !prev)}
           >
-            {!initialData.imageUrl ? (
+            {isEditing ? (
+              <>Cancel</>
+            ) : initialData.imageUrl ? (
               <>
-                <PlusCircle className="h-4 w-4 mr-2" /> add an Image
+                <Pencil size={20} />
+                <span className="ml-2">Edit Image</span>
               </>
             ) : (
               <>
-                <Pencil className="h-4 w-4 mr-2" /> Edit Image
+                <PlusCircle size={20} />
+                <span className="ml-2">Add Image</span>
               </>
             )}
           </Button>
         </div>
-        {!isEditing &&
-          (!initialData.imageUrl ? (
-            <>
-              <div className="flex items-center  w-full justify-center h-60 bg-slate-200 rounded-md">
-                <ImageIcon
-                  className={cn(
-                    "h-10 w-10  text-slate-500",
-                    !initialData.imageUrl && "text-slate-400"
-                  )}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-            <div className="flex items-center  w-full justify-center h-60 bg-slate-200 rounded-md">
-              <img
+
+        {!isEditing ? (
+          initialData.imageUrl ? (
+            <div className="relative aspect-video mt-2">
+              <Image
+                alt="Uploaded Image"
+                fill
+                className="object-cover rounded-md"
                 src={initialData.imageUrl}
-                alt="Course Image"
-                className="h-60 w-full object-cover rounded-md"
               />
             </div>
-            </>
-          ))}
+          ) : (
+            <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+              <ImageIcon className="h-10 w-10 text-slate-500" />
+            </div>
+          )
+        ) : (
+          <div className="mt-4">
+            <FileUpload
+              endpoint="courseImage"
+              onChange={(url) => {
+                if (url) {
+                  onSubmit({ imageUrl: url });
+                }
+              }}
+            />
+            <div className="text-xs text-muted-foreground mt-4">
+              16:9 aspect ratio is recommended
+            </div>
+          </div>
+        )}
       </div>
-
-      {isEditing && (
-        <div className="">
-       <FileUpload
-       endpoint="courseImage"
-         onChange={(url) => {
-            console.log("file uploaded url:",url)
-            if(url){
-                onSubmit({ImageUrl:url})
-            }
-        }}
-        />
-        </div>
-      )}
     </div>
   );
 };

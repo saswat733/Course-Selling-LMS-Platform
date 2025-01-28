@@ -4,47 +4,57 @@ const db = new PrismaClient();
 
 async function main() {
   try {
-    await db.category.createMany({
-      data: [
-        { name: "Web Development" },
-        { name: "Mobile Development" },
-        { name: "Data Science" },
-        { name: "Artificial Intelligence" },
-        { name: "Machine Learning" },
-        { name: "Blockchain" },
-        { name: "Cyber Security" },
-        { name: "Cloud Computing" },
-        { name: "DevOps" },
-        { name: "IoT" },
-        { name: "Augmented Reality" },
-        { name: "Virtual Reality" },
-        { name: "Game Development" },
-        { name: "UI/UX Design" },
-        { name: "Digital Marketing" },
-        { name: "Finance" },
-        { name: "Entrepreneurship" },
-        { name: "Business" },
-        { name: "Management" },
-        { name: "Leadership" },
-        { name: "Productivity" },
-        { name: "Personal Development" },
-        { name: "Career Development" },
-        { name: "Sales" },
-        { name: "Human Resources" },
-        { name: "Accounting" },
-        { name: "Project Management" },
-        { name: "Agile" },
-        { name: "Scrum" },
-        { name: "Computer Science" },
-        { name: "Music" },
-        { name: "Film" },
-        { name: "Photography" },
-        { name: "Sports" },
-        { name: "Technology" },
-        { name: "Engineering" },
-      ],
-      skipDuplicates: true, // Prevent duplicate errors
-    });
+    const categories = [
+      "Web Development",
+      "Mobile Development",
+      "Data Science",
+      "Artificial Intelligence",
+      "Machine Learning",
+      "Blockchain",
+      "Cyber Security",
+      "Cloud Computing",
+      "DevOps",
+      "IoT",
+      "Augmented Reality",
+      "Virtual Reality",
+      "Game Development",
+      "UI/UX Design",
+      "Digital Marketing",
+      "Finance",
+      "Entrepreneurship",
+      "Business",
+      "Management",
+      "Leadership",
+      "Productivity",
+      "Personal Development",
+      "Career Development",
+      "Sales",
+      "Human Resources",
+      "Accounting",
+      "Project Management",
+      "Agile",
+      "Scrum",
+      "Computer Science",
+      "Music",
+      "Film",
+      "Photography",
+      "Sports",
+      "Technology",
+      "Engineering",
+    ];
+
+    // Loop through and check if category exists before creating
+    for (const name of categories) {
+      const categoryExists = await db.category.findUnique({
+        where: { name },
+      });
+
+      if (!categoryExists) {
+        await db.category.create({
+          data: { name },
+        });
+      }
+    }
 
     console.log("Success seeding the data");
   } catch (error) {

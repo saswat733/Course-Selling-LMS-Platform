@@ -17,7 +17,7 @@ import AttachementForm from "./_components/attachement-form";
 import ChapterForm from "./_components/chapters-form";
 import { Banner } from "@/components/banner";
 import { CourseActions } from "./_components/course-actions";
-import { CategoryForm } from "./_components/category-form";
+import CategoryForm from "./_components/category-form";
 
 const CreatedCoursesPage = async ({
   params,
@@ -66,8 +66,8 @@ const CreatedCoursesPage = async ({
     course.description,
     course.price,
     course.imageUrl,
-    course.categoryIds,
-    course.chapters.some(chapter => chapter.isPublished),
+    course.categoryId,
+    course.chapters.some((chapter) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -75,6 +75,9 @@ const CreatedCoursesPage = async ({
 
   const completionText = `complete all the fields (${completedFields}/${totalFields})`;
   const isCompleted=requiredFields.every(Boolean)
+  // if(course.isPublished){
+  //   return redirect(`/teacher/courses/`) 
+  // }
 
   return (
     <>

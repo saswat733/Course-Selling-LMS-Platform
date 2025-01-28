@@ -1,5 +1,8 @@
 "use client";
 
+import qs from 'query-string'
+import { cn } from "@/lib/utils";
+import { usePathname, useSearchParams,useRouter } from "next/navigation";
 import { IconType } from "react-icons/lib";
 
 interface CategoryItemProps {
@@ -9,13 +12,37 @@ interface CategoryItemProps {
 }
 
 export const CategoryItem = ({ label, value, icon: Icon }: CategoryItemProps) => {
+
+  const pathname=usePathname()
+  const router=useRouter()
+  const searchParams=useSearchParams();
+
+  const currentCategoryId=searchParams.get("categoryId");
+  const currentTitle=searchParams.get("title");
+
+  const isSelected=currentCategoryId===value;
+
+  const onClick=()=>{
+    const url=qs.stringifyUrl({
+      url:pathname,
+      query:{
+        title:currentTitle,
+        categoryId:isSelected?null:value,
+      }
+    },{skipNull:true,skipEmptyString:true})
+
+    router.push(url);
+  }
+
   return (
     <button 
       aria-label={label} 
-      className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      onClick={onClick}
+      className={cn("py-2 px-3 border border-slate-200 rounded-full flex items-center gap-x-1 hover:border-sky-700 transition",isSelected && "border-sky-700 bg-sky-200 text-sky-800")}
+      type="button"
     >
-      {Icon && <Icon className="w-5 h-5" />}
-      <span>{label}</span>
+      {Icon && <Icon size={20} />}
+      <div className="truncate">{label}</div>
     </button>
   );
 };

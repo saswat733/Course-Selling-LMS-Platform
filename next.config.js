@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-        domains:[
-            "utfs.io"
-        ]
-    },
-    reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        // protocol: "https",
+        hostname: "utfs.io",
+        // pathname: "/f/**", // Adjust the pathname as per your requirements
+      },
+    ],
+  },
+  reactStrictMode: false,
+};
 
-}
-
-module.exports = nextConfig
+module.exports = nextConfig;
