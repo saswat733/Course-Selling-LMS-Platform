@@ -25,31 +25,45 @@ const SearchPage = async ({ searchParams = {} }: SearchPageProps) => {
   // Extract and provide default values for searchParams
   const { title = "", categoryId = "" } = searchParams;
 
-  // Fetch categories
-  const categories = await db.category.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
+  try {
+    // Fetch categories
+    const categories = await db.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
 
-  // Fetch courses
-  const courses = await getCourses({
-    userId,
-    title,
-    categoryId,
-  });
+    // Fetch courses
+    const courses = await getCourses({
+      userId,
+      title,
+      categoryId,
+    });
 
-  return (
-    <>
-      <div className="px-6 pt-6 md:hidden md:mb-0 block">
-        <SearchInput />
+    return (
+      <>
+        <div className="px-6 pt-6 md:hidden md:mb-0 block">
+          <SearchInput />
+        </div>
+        <div className="p-6 space-y-4">
+          <Categories items={categories} />
+          <CoursesList items={courses} />
+        </div>
+      </>
+    );
+  } catch (error) {
+    console.error("Error loading search page:", error);
+
+    // Render a fallback UI
+    return (
+      <div className="p-6 text-center">
+        <h2 className="text-xl font-semibold">Something went wrong!</h2>
+        <p className="text-gray-500">
+          We couldn’t load the page. Please try again later.
+        </p>
       </div>
-      <div className="p-6 space-y-4">
-        <Categories items={categories} />
-        <CoursesList items={courses} />
-      </div>
-    </>
-  );
+    );
+  }
 };
 
 export default SearchPage;

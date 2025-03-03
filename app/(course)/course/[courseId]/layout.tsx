@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
 
-const CourseLayout =async ({
+const CourseLayout = async ({
   children,
   params,
 }: {
@@ -14,43 +14,40 @@ const CourseLayout =async ({
 }) => {
   const { userId } = await auth();
 
-  if(!userId) {
+  if (!userId) {
     return redirect("/");
   }
 
-  const {courseId}=await params
+  const { courseId } = params; // Directly use params here without awaiting
 
-  const course=await db.course.findMany({
+  const course = await db.course.findMany({
     where: {
-      id:courseId,
+      id: courseId,
     },
-    include:{
-        chapters:{
-            where:{
-                isPublished:true,
+    include: {
+      chapters: {
+        where: {
+          isPublished: true,
+        },
+        include: {
+          userProgress: {
+            where: {
+              userId,
             },
-            include:{
-                userProgress:{
-                    where:{
-                        userId,
-                    }
-                }
-            },
-            orderBy:{
-                position:"asc",
-            }
+          },
+        },
+        orderBy: {
+          position: "asc",
+        },
+      },
+    },
+  });
 
-        }
-    }
-
-
-  })
-
-  if(!course){
-    return redirect("/")
+  if (!course || course.length === 0) {
+    return redirect("/");
   }
 
-  const progressCount=await getProgress(userId,course[0].id)
+  const progressCount = await getProgress(userId, course[0].id);
 
   return (
     <div className="h-full">

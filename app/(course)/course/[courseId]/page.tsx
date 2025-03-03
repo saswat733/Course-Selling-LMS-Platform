@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
-  
-  const {courseId}=await params
+  const { courseId } = params; // No need for `await` here
+
   const course = await db.course.findUnique({
     where: {
       id: courseId,
@@ -20,7 +20,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     },
   });
 
-  if (!course) {
+  if (!course || course.chapters.length === 0) {
     return redirect("/");
   }
 

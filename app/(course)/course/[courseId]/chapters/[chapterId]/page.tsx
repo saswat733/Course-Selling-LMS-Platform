@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator";
 
 import { CourseEnrollButton } from "./_components/course-enroll-button";
 import { VideoPlayer } from "./_components/video-player";
-
 const ChapterIdPage = async ({
   params,
 }: {
@@ -21,8 +20,10 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const {chapterId,courseId}=await params;
+  // Destructure params directly
+  const { courseId, chapterId } = params;
 
+  // Fetch chapter details
   const {
     chapter,
     course,
@@ -31,11 +32,7 @@ const ChapterIdPage = async ({
     nextChapter,
     userProgress,
     purchase,
-  } = await getChapter({
-    userId,
-    chapterId:chapterId,
-    courseId:courseId,
-  });
+  } = await getChapter({ userId, courseId, chapterId });
 
   if (!chapter || !course) {
     return redirect("/");
@@ -70,29 +67,28 @@ const ChapterIdPage = async ({
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
             <h2 className="text-2xl font-semibold mb-2">{chapter.title}</h2>
-            {purchase ? (
-              <></>
-            ) : (
-              <>
-                <CourseEnrollButton
-                  courseId={courseId}
-                  price={course.price!}
-                />
-              </>
+            {!purchase && (
+              <CourseEnrollButton courseId={courseId} price={course.price!} />
             )}
           </div>
           <Separator />
-          <div>
-            {/* <Preview value={chapter.description!} /> */}
-          </div>
+          <div>{/* Preview component here if needed */}</div>
           {!!attachments.length && (
             <>
               <Separator />
               <div className="p-4">
                 {attachments.map((attachment) => (
-                  <>
-                  
-                  </>
+                  <div key={attachment.id} className="flex items-center mb-2">
+                    <File className="w-5 h-5 mr-2" />
+                    <a
+                      href={attachment.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {attachment.name}
+                    </a>
+                  </div>
                 ))}
               </div>
             </>
